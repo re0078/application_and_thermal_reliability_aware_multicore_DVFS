@@ -17,6 +17,8 @@ def run():
         power_predictor.partial_fit(np.array(power_hist), p)
 
     Q, stat = agent.start(secondary_loop)
+    with open("out", 'w') as f:
+        f.write(stat)
 
 
 def __main__():

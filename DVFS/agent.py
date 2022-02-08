@@ -6,6 +6,7 @@ from typing import List
 import numpy as np
 import plotting
 
+from CDVFS import cdvfs
 from DVFS.models.models import ThermalReliability, ApplicationReliability
 from DVFS.power_prediction import PowerPredictor
 
@@ -81,21 +82,24 @@ class DVFSAgent:
         v = array[idx]
         return v, r, tr
 
-    @staticmethod
-    def get_initial_state():
-        # TODO
-        return 0, 0, 0
+    def get_initial_state(self):
+        p = np.random.random() * (self.MAX_POWER - self.MIN_POWER) + self.MIN_POWER
+        p = np.array([p] * len(cdvfs.events))
+        f = cdvfs.get_freq()
+        t = cdvfs.get_t()
+        return p, self.fr.get_FR(1, 1, f), self.tr.get_TR(time_ns(), t)
 
     def env_step(self, s, action):
-        # TODO
         T = 10
         w = 1
-        return (0, 0, 0), T, w
+        v, f = action
+        cdvfs.set_freq(f)
+        p = cdvfs.get_p()
+        return p, self.fr.get_FR(1, 1, f), self.tr.get_TR(time_ns(), T), T, w
 
     def env_random_step(self, s):
         action = np.random.choice(np.arange(
             len(self.action_space)))
-        # TODO: interact
         T = 10
         w = 1
         return (0, 0, 0), T, w
