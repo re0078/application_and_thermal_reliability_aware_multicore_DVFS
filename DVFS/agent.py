@@ -43,11 +43,14 @@ class DVFSAgent:
     start_time: int
     power_hist: List[int]
 
-    def __init__(self, power_predictor, start_time):
+    def __init__(self, power_predictor):
         self.power_predictor = power_predictor  # pre learnt power predictor
         self.tr = ThermalReliability()
         self.fr = ApplicationReliability()
-        self.start_time = start_time
+        self.reset_initial_time()
+
+    def reset_initial_time(self):
+        self.start_time = time_ns()
 
     def get_reward(self, s, s_prime):
         tr_reward = s_prime[_TR_KEY] / s[_TR_KEY] - 1
@@ -85,6 +88,14 @@ class DVFSAgent:
 
     def env_step(self, s, action):
         # TODO
+        T = 10
+        w = 1
+        return (0, 0, 0), T, w
+
+    def env_random_step(self, s):
+        action = np.random.choice(np.arange(
+            len(self.action_space)))
+        # TODO: interact
         T = 10
         w = 1
         return (0, 0, 0), T, w
